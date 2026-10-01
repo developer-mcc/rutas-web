@@ -1,0 +1,48 @@
+@if (site.cargado()) {
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <app-cabecera />
+  <main id="contenido" tabindex="-1">
+    @for (seccion of cuerpo(); track seccion.codigo) {
+      @switch (seccion.codigo) {
+        @case ('hero') {
+          <app-hero />
+        }
+        @case ('valores') {
+          <app-valores />
+        }
+        @case ('tipos-viajero') {
+          <app-tipos-viajero />
+        }
+        @case ('tours') {
+          <app-tours />
+        }
+        @case ('promo') {
+          <app-promo />
+        }
+        @case ('familias') {
+          <app-familias />
+        }
+        @case ('confort') {
+          <app-confort />
+        }
+        @case ('confianza') {
+          <app-confianza />
+        }
+        @case ('cotizador') {
+          <app-cotizador />
+        }
+        @case ('faq') {
+          <app-faq />
+        }
+      }
+    }
+  </main>
+  @if (conPie()) {
+    <app-pie />
+  }
+  <app-flotante-whatsapp />
+} @else if (site.error()) {
+  <p class="estado-carga" role="alert">
+    No se pudo cargar el contenido. Intenta nuevamente en unos minutos.
+  </p>
+}

@@ -42,3 +42,19 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Secretos: nunca al repositorio (las plantillas .env.example sí se pueden subir)
+.env
+.env.*
+!.env.example
+deploy/local/.env
+*.pem
+*.key
+
+# Herramientas locales de asistentes
+.claude/
+
+# Documentación y scripts SQL: se mantienen fuera del repositorio
+*.md
+*.sql
+db-scripts/

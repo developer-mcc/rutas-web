@@ -1,0 +1,49 @@
+<article class="tour" [class.featured]="tour().destacado" [class.signature-tour]="tour().destacado">
+  <div class="tour-img">
+    @if (tour().imagenUrl) {
+      <img [src]="tour().imagenUrl" alt="" loading="lazy" decoding="async" />
+    }
+    <div class="shade"></div>
+    @if (tour().etiqueta) {
+      <span class="tag">{{ tour().etiqueta }}</span>
+    }
+    @if (tour().insignia) {
+      <span class="best">{{ tour().insignia }}</span>
+    }
+  </div>
+  <div class="tour-body">
+    <div class="tour-title">
+      <span aria-hidden="true">{{ tour().emoji }}</span>
+      <h3>{{ tour().nombre }}</h3>
+    </div>
+    <p>{{ tour().descripcion }}</p>
+    @if (tour().resumen) {
+      <div class="micro">{{ tour().resumen }}</div>
+    }
+    @if (tour().inclusiones.length) {
+      <div class="package-includes">
+        <div class="includes-title">{{ site.texto('tours.incluye_titulo') }}</div>
+        <ul>
+          @for (inclusion of tour().inclusiones; track $index) {
+            <li>{{ inclusion }}</li>
+          }
+        </ul>
+      </div>
+    }
+    <div class="price-row">
+      <div>
+        <small>{{ tour().textoPrecio }}</small>
+        <strong>{{ precio() }}</strong>
+        <span>{{ tour().unidadPrecio }}</span>
+      </div>
+      @if (tour().textoPorPersona) {
+        <div class="pp">{{ tour().textoPorPersona }}</div>
+      }
+    </div>
+    <a class="book" [href]="whatsapp()" target="_blank" rel="noopener"
+      >{{ site.texto('tours.boton_reserva')
+      }}<span class="sr-only"> {{ tour().nombre }} (se abre en una pestaña nueva)</span
+      ><b aria-hidden="true">→</b></a
+    >
+  </div>
+</article>

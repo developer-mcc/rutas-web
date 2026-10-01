@@ -1,0 +1,33 @@
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">{{ site.texto('hero.eyebrow') }}</span>
+      <h1>
+        {{ site.texto('hero.titulo') }}
+        <span>{{ site.texto('hero.titulo_destacado') }}</span>
+      </h1>
+      <p>{{ site.texto('hero.descripcion') }}</p>
+      <div class="hero-actions">
+        <a class="btn btn-main" href="#tours">{{ site.texto('hero.boton_principal') }}</a>
+        <a class="btn btn-alt" href="#cotizar">{{ site.texto('hero.boton_secundario') }}</a>
+      </div>
+      <div class="trust">
+        @for (chip of chips(); track chip.id) {
+          <span
+            ><span aria-hidden="true">{{ chip.icono }}</span> {{ chip.titulo }}</span
+          >
+        }
+      </div>
+    </div>
+    <div class="hero-card">
+      <img [src]="site.texto('hero.imagen')" [alt]="site.texto('hero.imagen_alt')" />
+      <div class="price-chip">
+        {{ site.texto('hero.chip_texto') }} <strong>{{ site.texto('hero.chip_precio') }}</strong>
+      </div>
+      <div class="hero-note">
+        <b>{{ site.texto('hero.nota_titulo') }}</b>
+        <span>{{ site.texto('hero.nota_texto') }}</span>
+      </div>
+    </div>
+  </div>
+</header>

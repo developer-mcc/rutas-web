@@ -1,0 +1,65 @@
+<div class="adm-cabecera">
+  <div>
+    <h1>Cotizaciones</h1>
+    <p class="adm-sub">
+      Solicitudes enviadas desde el cotizador de la web. Pendientes: {{ pendientes() }}.
+    </p>
+  </div>
+  <label class="adm-check">
+    <input
+      type="checkbox"
+      [checked]="soloPendientes()"
+      (change)="soloPendientes.set(!soloPendientes())"
+    />
+    <span>Mostrar solo pendientes</span>
+  </label>
+</div>
+
+@if (error()) {
+  <div class="adm-aviso error" role="alert">{{ error() }}</div>
+}
+
+@if (cargando()) {
+  <div class="adm-vacio" role="status">Cargando…</div>
+} @else {
+  <table class="adm-tabla">
+    <caption class="adm-sr">
+      Cotizaciones recibidas
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Recibida</th>
+        <th scope="col">Tour</th>
+        <th scope="col">Fecha del viaje</th>
+        <th scope="col">Pasajeros</th>
+        <th scope="col">Recojo</th>
+        <th scope="col">Atendida</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (cotizacion of visibles(); track cotizacion.id) {
+        <tr [class.inactiva]="cotizacion.atendida">
+          <td>{{ cotizacion.creadaEn | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>
+            <strong>{{ cotizacion.tourNombre }}</strong>
+          </td>
+          <td>{{ cotizacion.fechaViaje | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ cotizacion.pasajeros }}</td>
+          <td>{{ cotizacion.recojo }}</td>
+          <td>
+            <input
+              type="checkbox"
+              [checked]="cotizacion.atendida"
+              (change)="cambiarAtendida(cotizacion, $event)"
+              [attr.aria-label]="'Atendida: ' + cotizacion.tourNombre"
+            />
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="adm-vacio">No hay cotizaciones para mostrar.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -1,0 +1,28 @@
+# Servicio systemd del backend. Copiar a /etc/systemd/system/rutas-api.service
+# Luego: sudo systemctl daemon-reload && sudo systemctl enable --now rutas-api
+[Unit]
+Description=Iri Travel Peru - API (Spring Boot)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=viaja
+Group=viaja
+EnvironmentFile=/etc/viaja/rutas-api.env
+ExecStart=/usr/bin/java -Xms256m -Xmx512m -jar /opt/viaja/rutas-api.jar
+Restart=on-failure
+RestartSec=5
+SuccessExitStatus=143
+
+# Endurecimiento: el servicio solo puede escribir en la carpeta de imágenes.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/viaja/uploads
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

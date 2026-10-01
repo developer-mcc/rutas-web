@@ -1,0 +1,146 @@
+<div class="adm-cabecera">
+  <div>
+    <h1>Preguntas frecuentes</h1>
+    <p class="adm-sub">
+      Se muestran en la sección de preguntas de la web, ordenadas por su número de orden.
+    </p>
+  </div>
+  <button class="adm-btn adm-btn-verde" type="button" (click)="nueva()">+ Nueva pregunta</button>
+</div>
+
+@if (error()) {
+  <div class="adm-aviso error" role="alert">{{ error() }}</div>
+}
+
+@if (editando() !== null) {
+  <form class="adm-tarjeta" [formGroup]="form" (ngSubmit)="guardar()">
+    <h2>{{ editando() === 'nueva' ? 'Nueva pregunta' : 'Editar pregunta' }}</h2>
+    <label class="adm-campo">
+      <span>Pregunta</span>
+      <input
+        admEnfocar
+        formControlName="pregunta"
+        maxlength="300"
+        aria-required="true"
+        [attr.aria-invalid]="form.controls.pregunta.invalid && form.controls.pregunta.touched"
+      />
+      @if (form.controls.pregunta.invalid && form.controls.pregunta.touched) {
+        <span class="adm-error">La pregunta es obligatoria</span>
+      }
+    </label>
+    <label class="adm-campo" style="margin-top: 12px">
+      <span>Respuesta</span>
+      <textarea
+        formControlName="respuesta"
+        maxlength="4000"
+        aria-required="true"
+        [attr.aria-invalid]="form.controls.respuesta.invalid && form.controls.respuesta.touched"
+      ></textarea>
+      @if (form.controls.respuesta.invalid && form.controls.respuesta.touched) {
+        <span class="adm-error">La respuesta es obligatoria</span>
+      }
+    </label>
+    <div class="adm-grid2" style="margin: 12px 0">
+      <label class="adm-campo">
+        <span>Orden</span>
+        <input type="number" formControlName="orden" min="0" />
+      </label>
+      <label class="adm-check"
+        ><input type="checkbox" formControlName="activo" /><span>Visible en la web</span></label
+      >
+    </div>
+    <div class="adm-acciones">
+      <button class="adm-btn adm-btn-verde" type="submit">Guardar</button>
+      <button class="adm-btn adm-btn-sec" type="button" (click)="editando.set(null)">
+        Cancelar
+      </button>
+    </div>
+  </form>
+}
+
+@if (cargando()) {
+  <div class="adm-vacio" role="status">Cargando…</div>
+} @else {
+  <table class="adm-tabla">
+    <caption class="adm-sr">
+      Preguntas frecuentes
+    </caption>
+    <thead>
+      <tr>
+        <th class="adm-col-extra" scope="col">Orden</th>
+        <th scope="col">Pregunta</th>
+        <th scope="col">Estado</th>
+        <th scope="col"><span class="adm-sr">Acciones</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (faq of faqs(); track faq.id) {
+        <tr [class.inactiva]="!faq.activo">
+          <td class="adm-col-extra">{{ faq.orden }}</td>
+          <td>
+            <strong>{{ faq.pregunta }}</strong>
+            <div class="adm-sub">{{ faq.respuesta }}</div>
+          </td>
+          <td>
+            <span class="adm-pildora" [class.off]="!faq.activo">{{
+              faq.activo ? 'Visible' : 'Oculta'
+            }}</span>
+          </td>
+          <td>
+            @if (confirmando() === faq.id) {
+              <div
+                class="adm-acciones"
+                role="group"
+                [attr.aria-label]="'Confirmar eliminación de ' + faq.pregunta"
+                [admRetorno]="'eliminar-faq-' + faq.id"
+              >
+                <span>¿Eliminar?</span>
+                <button
+                  class="adm-btn adm-btn-peligro adm-btn-mini"
+                  type="button"
+                  (click)="eliminar(faq)"
+                  [attr.aria-label]="'Sí, eliminar: ' + faq.pregunta"
+                >
+                  Sí
+                </button>
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  (click)="confirmando.set(null)"
+                  admEnfocar
+                  aria-label="No, conservar"
+                >
+                  No
+                </button>
+              </div>
+            } @else {
+              <div class="adm-acciones">
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  (click)="editar(faq)"
+                  [attr.aria-label]="'Editar: ' + faq.pregunta"
+                >
+                  Editar
+                </button>
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  [id]="'eliminar-faq-' + faq.id"
+                  (click)="confirmando.set(faq.id)"
+                  [attr.aria-label]="'Eliminar: ' + faq.pregunta"
+                >
+                  Eliminar
+                </button>
+              </div>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="adm-vacio">Todavía no hay preguntas.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

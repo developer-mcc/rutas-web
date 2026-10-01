@@ -1,0 +1,20 @@
+<section aria-labelledby="confianza-title" class="confidence">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="kicker">{{ site.texto('confianza.kicker') }}</div>
+        <h2 id="confianza-title">{{ site.texto('confianza.titulo') }}</h2>
+        <p class="lead">{{ site.texto('confianza.lead') }}</p>
+      </div>
+    </div>
+    <div class="confidence-grid">
+      @for (item of items(); track item.id) {
+        <article>
+          <span aria-hidden="true">{{ item.icono }}</span>
+          <b>{{ item.titulo }}</b>
+          <p>{{ item.texto }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>

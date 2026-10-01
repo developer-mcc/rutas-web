@@ -1,0 +1,40 @@
+<div class="vip-topbar">{{ site.texto('topbar.texto') }}</div>
+<nav aria-label="Principal">
+  <div class="wrap nav">
+    <div class="brand">
+      <img
+        class="brand-logo"
+        [src]="site.texto('sitio.logo')"
+        [alt]="site.texto('sitio.logo_alt')"
+      />
+    </div>
+    <button
+      #boton
+      type="button"
+      class="menu-toggle"
+      aria-controls="menu-principal"
+      [attr.aria-expanded]="abierto()"
+      (click)="alternar()"
+    >
+      <span class="sr-only">{{ etiquetaBoton() }}</span>
+      <span class="menu-icono" aria-hidden="true"></span>
+    </button>
+    <div class="links" id="menu-principal" [class.abierto]="abierto()" (click)="cerrar()">
+      @for (enlace of enlaces; track enlace.id) {
+        <a
+          [href]="'#' + enlace.id"
+          [class.activo]="activa() === enlace.id"
+          [attr.aria-current]="activa() === enlace.id ? 'location' : null"
+          >{{ site.texto(enlace.clave) }}</a
+        >
+      }
+    </div>
+    <a
+      class="cta-sm"
+      [href]="site.whatsappUrl(site.texto('whatsapp.mensaje_general'))"
+      target="_blank"
+      rel="noopener"
+      >{{ site.texto('nav.boton') }}<span class="sr-only"> (se abre en una pestaña nueva)</span></a
+    >
+  </div>
+</nav>

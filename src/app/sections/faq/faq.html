@@ -1,0 +1,19 @@
+<section aria-labelledby="faq-title" class="faq" id="preguntas">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="kicker">{{ site.texto('faq.kicker') }}</div>
+        <h2 id="faq-title">{{ site.texto('faq.titulo') }}</h2>
+        <p class="lead">{{ site.texto('faq.lead') }}</p>
+      </div>
+    </div>
+    <div class="faq-grid">
+      @for (faq of site.faqs(); track faq.id) {
+        <details>
+          <summary>{{ faq.pregunta }}</summary>
+          <p>{{ faq.respuesta }}</p>
+        </details>
+      }
+    </div>
+  </div>
+</section>

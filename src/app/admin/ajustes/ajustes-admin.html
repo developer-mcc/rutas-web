@@ -1,0 +1,97 @@
+<div class="adm-cabecera">
+  <div>
+    <h1>Ajustes del sitio</h1>
+    <p class="adm-sub">
+      Textos, imágenes, colores, WhatsApp y SEO de toda la web. Los cambios se guardan todos juntos.
+    </p>
+  </div>
+  <div class="adm-acciones">
+    @if (pendientes() > 0) {
+      <button class="adm-btn adm-btn-sec" type="button" (click)="descartar()">Descartar</button>
+    }
+    <button
+      class="adm-btn adm-btn-verde"
+      type="button"
+      [disabled]="pendientes() === 0 || guardando()"
+      (click)="guardar()"
+    >
+      {{ guardando() ? 'Guardando…' : 'Guardar cambios (' + pendientes() + ')' }}
+    </button>
+  </div>
+</div>
+
+@if (error()) {
+  <div class="adm-aviso error" role="alert">{{ error() }}</div>
+}
+@if (mensaje()) {
+  <div class="adm-aviso ok" role="status">{{ mensaje() }}</div>
+}
+
+@if (cargando()) {
+  <div class="adm-vacio" role="status">Cargando…</div>
+} @else {
+  <div class="adm-pestanas" role="group" aria-label="Grupos de ajustes">
+    @for (grupo of grupos(); track grupo) {
+      <button
+        type="button"
+        [class.activa]="grupo === grupoActivo()"
+        [attr.aria-pressed]="grupo === grupoActivo()"
+        (click)="grupoActivo.set(grupo)"
+      >
+        {{ etiquetaGrupo(grupo) }}
+        @if (pendientesDe(grupo) > 0) {
+          ({{ pendientesDe(grupo) }})
+        }
+      </button>
+    }
+  </div>
+
+  <div class="adm-tarjeta">
+    <h2>{{ etiquetaGrupo(grupoActivo()) }}</h2>
+    @for (ajuste of delGrupo(); track ajuste.clave) {
+      <div class="adm-campo" style="margin-bottom: 16px">
+        <span
+          >{{ ajuste.etiqueta }} <small class="adm-clave">{{ ajuste.clave }}</small></span
+        >
+        @switch (ajuste.tipo) {
+          @case ('TEXTO_LARGO') {
+            <textarea
+              [attr.aria-label]="ajuste.etiqueta"
+              [value]="valor(ajuste)"
+              (input)="editar(ajuste.clave, $event)"
+              maxlength="4000"
+            ></textarea>
+          }
+          @case ('IMAGEN') {
+            <app-imagen-input [valor]="valor(ajuste)" (cambio)="cambiar(ajuste.clave, $event)" />
+          }
+          @case ('COLOR') {
+            <div class="adm-fila-color">
+              <input
+                type="color"
+                [attr.aria-label]="ajuste.etiqueta + ' (selector de color)'"
+                [value]="valor(ajuste)"
+                (input)="editar(ajuste.clave, $event)"
+              />
+              <input
+                [attr.aria-label]="ajuste.etiqueta + ' (código hexadecimal)'"
+                [value]="valor(ajuste)"
+                (input)="editar(ajuste.clave, $event)"
+                maxlength="7"
+                placeholder="#rrggbb"
+              />
+            </div>
+          }
+          @default {
+            <input
+              [attr.aria-label]="ajuste.etiqueta"
+              [value]="valor(ajuste)"
+              (input)="editar(ajuste.clave, $event)"
+              maxlength="300"
+            />
+          }
+        }
+      </div>
+    }
+  </div>
+}

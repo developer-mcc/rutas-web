@@ -1,0 +1,114 @@
+<div class="adm-cabecera">
+  <div>
+    <h1>Tours</h1>
+    <p class="adm-sub">
+      Los tours activos aparecen en el catálogo de la web, ordenados por su número de orden.
+    </p>
+  </div>
+  <a class="adm-btn adm-btn-verde" routerLink="nuevo">+ Nuevo tour</a>
+</div>
+
+@if (error()) {
+  <div class="adm-aviso error" role="alert">{{ error() }}</div>
+}
+@if (mensaje()) {
+  <div class="adm-aviso ok" role="status">{{ mensaje() }}</div>
+}
+
+@if (cargando()) {
+  <div class="adm-vacio" role="status">Cargando…</div>
+} @else {
+  <table class="adm-tabla">
+    <caption class="adm-sr">
+      Tours
+    </caption>
+    <thead>
+      <tr>
+        <th class="adm-col-extra" scope="col">Orden</th>
+        <th class="adm-col-extra" scope="col"><span class="adm-sr">Acciones</span></th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Precio desde</th>
+        <th scope="col">Estado</th>
+        <th scope="col"><span class="adm-sr">Acciones</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (tour of tours(); track tour.id) {
+        <tr [class.inactiva]="!tour.activo">
+          <td class="adm-col-extra">{{ tour.orden }}</td>
+          <td class="adm-col-extra">
+            @if (tour.imagenUrl) {
+              <img class="adm-miniatura" [src]="tour.imagenUrl" alt="" />
+            }
+          </td>
+          <td>
+            <strong
+              ><span aria-hidden="true">{{ tour.emoji }}</span> {{ tour.nombre }}</strong
+            >
+            <div class="adm-sub">{{ tour.slug }}</div>
+          </td>
+          <td>{{ precio(tour) }}</td>
+          <td>
+            <span class="adm-pildora" [class.off]="!tour.activo">{{
+              tour.activo ? 'Activo' : 'Inactivo'
+            }}</span>
+            @if (tour.destacado) {
+              <span class="adm-pildora aviso">Destacado</span>
+            }
+          </td>
+          <td>
+            @if (confirmando() === tour.id) {
+              <div
+                class="adm-acciones"
+                role="group"
+                [attr.aria-label]="'Confirmar eliminación de ' + tour.nombre"
+                [admRetorno]="'eliminar-tour-' + tour.id"
+              >
+                <span>¿Eliminar?</span>
+                <button
+                  class="adm-btn adm-btn-peligro adm-btn-mini"
+                  type="button"
+                  (click)="eliminar(tour)"
+                  [attr.aria-label]="'Sí, eliminar ' + tour.nombre"
+                >
+                  Sí
+                </button>
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  (click)="confirmando.set(null)"
+                  admEnfocar
+                  aria-label="No, conservar"
+                >
+                  No
+                </button>
+              </div>
+            } @else {
+              <div class="adm-acciones">
+                <a
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  [routerLink]="[tour.id]"
+                  [attr.aria-label]="'Editar ' + tour.nombre"
+                  >Editar</a
+                >
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  [id]="'eliminar-tour-' + tour.id"
+                  (click)="confirmando.set(tour.id)"
+                  [attr.aria-label]="'Eliminar ' + tour.nombre"
+                >
+                  Eliminar
+                </button>
+              </div>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="adm-vacio">Todavía no hay tours.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -1,0 +1,185 @@
+<div class="adm-cabecera">
+  <div>
+    <h1>Bloques de contenido</h1>
+    <p class="adm-sub">
+      Listas cortas de cada sección: valores, tipos de viajero, confort, confianza, etc.
+    </p>
+  </div>
+  @if (seccionActual()) {
+    <button class="adm-btn adm-btn-verde" type="button" (click)="nuevo()">+ Nuevo bloque</button>
+  }
+</div>
+
+@if (error()) {
+  <div class="adm-aviso error" role="alert">{{ error() }}</div>
+}
+
+<div class="adm-pestanas" role="group" aria-label="Sección">
+  @for (seccion of secciones(); track seccion.codigo) {
+    <button
+      type="button"
+      [class.activa]="seccion.codigo === seccionActual()"
+      [attr.aria-pressed]="seccion.codigo === seccionActual()"
+      (click)="seleccionar(seccion.codigo)"
+    >
+      {{ seccion.nombre }}
+    </button>
+  }
+</div>
+
+@if (editando() !== null) {
+  <form class="adm-tarjeta" [formGroup]="form" (ngSubmit)="guardar()">
+    <h2>{{ editando() === 'nuevo' ? 'Nuevo bloque' : 'Editar bloque' }} · {{ nombreSeccion() }}</h2>
+    <div class="adm-grid2">
+      <label class="adm-campo">
+        <span>Icono o emoji</span>
+        <input admEnfocar formControlName="icono" maxlength="40" />
+      </label>
+      <label class="adm-campo">
+        <span>Título</span>
+        <input
+          formControlName="titulo"
+          maxlength="200"
+          aria-required="true"
+          [attr.aria-invalid]="form.controls.titulo.invalid && form.controls.titulo.touched"
+        />
+        @if (form.controls.titulo.invalid && form.controls.titulo.touched) {
+          <span class="adm-error">El título es obligatorio</span>
+        }
+      </label>
+    </div>
+    <label class="adm-campo" style="margin-top: 12px">
+      <span>Texto</span>
+      <textarea formControlName="texto" maxlength="2000"></textarea>
+    </label>
+    <div style="margin-top: 12px">
+      <div class="adm-campo"><span>Imagen (opcional)</span></div>
+      <app-imagen-input
+        [valor]="form.controls.imagenUrl.value"
+        (cambio)="form.controls.imagenUrl.setValue($event)"
+      />
+    </div>
+    <label class="adm-check" style="margin: 12px 0">
+      <input type="checkbox" formControlName="activo" /><span>Visible en la web</span>
+    </label>
+    <div class="adm-acciones">
+      <button class="adm-btn adm-btn-verde" type="submit">Guardar</button>
+      <button class="adm-btn adm-btn-sec" type="button" (click)="editando.set(null)">
+        Cancelar
+      </button>
+    </div>
+  </form>
+}
+
+@if (cargando()) {
+  <div class="adm-vacio" role="status">Cargando…</div>
+} @else {
+  <table class="adm-tabla">
+    <caption class="adm-sr">
+      Bloques de la sección
+    </caption>
+    <thead>
+      <tr>
+        <th class="adm-col-extra" scope="col">#</th>
+        <th class="adm-col-extra" scope="col"><span class="adm-sr">Acciones</span></th>
+        <th scope="col">Contenido</th>
+        <th scope="col">Estado</th>
+        <th scope="col"><span class="adm-sr">Acciones</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (bloque of bloques(); track bloque.id) {
+        <tr [class.inactiva]="!bloque.activo">
+          <td class="adm-col-extra">{{ $index + 1 }}</td>
+          <td class="adm-col-extra">
+            @if (bloque.imagenUrl) {
+              <img class="adm-miniatura" [src]="bloque.imagenUrl" alt="" />
+            }
+          </td>
+          <td>
+            <strong
+              ><span aria-hidden="true">{{ bloque.icono }}</span> {{ bloque.titulo }}</strong
+            >
+            <div class="adm-sub">{{ bloque.texto }}</div>
+          </td>
+          <td>
+            <span class="adm-pildora" [class.off]="!bloque.activo">{{
+              bloque.activo ? 'Visible' : 'Oculto'
+            }}</span>
+          </td>
+          <td>
+            @if (confirmando() === bloque.id) {
+              <div
+                class="adm-acciones"
+                role="group"
+                [attr.aria-label]="'Confirmar eliminación de ' + bloque.titulo"
+                [admRetorno]="'eliminar-bloque-' + bloque.id"
+              >
+                <span>¿Eliminar?</span>
+                <button
+                  class="adm-btn adm-btn-peligro adm-btn-mini"
+                  type="button"
+                  (click)="eliminar(bloque)"
+                  [attr.aria-label]="'Sí, eliminar ' + bloque.titulo"
+                >
+                  Sí
+                </button>
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  (click)="confirmando.set(null)"
+                  admEnfocar
+                  aria-label="No, conservar"
+                >
+                  No
+                </button>
+              </div>
+            } @else {
+              <div class="adm-acciones">
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  [disabled]="$first"
+                  (click)="mover($index, -1)"
+                  [attr.aria-label]="'Subir ' + bloque.titulo"
+                >
+                  <span aria-hidden="true">↑</span>
+                </button>
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  [disabled]="$last"
+                  (click)="mover($index, 1)"
+                  [attr.aria-label]="'Bajar ' + bloque.titulo"
+                >
+                  <span aria-hidden="true">↓</span>
+                </button>
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  (click)="editar(bloque)"
+                  [attr.aria-label]="'Editar ' + bloque.titulo"
+                >
+                  Editar
+                </button>
+                <button
+                  class="adm-btn adm-btn-sec adm-btn-mini"
+                  type="button"
+                  [id]="'eliminar-bloque-' + bloque.id"
+                  (click)="confirmando.set(bloque.id)"
+                  [attr.aria-label]="'Eliminar ' + bloque.titulo"
+                >
+                  Eliminar
+                </button>
+              </div>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="adm-vacio">Esta sección todavía no tiene bloques.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

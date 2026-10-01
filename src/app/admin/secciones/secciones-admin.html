@@ -1,0 +1,78 @@
+<div class="adm-cabecera">
+  <div>
+    <h1>Secciones</h1>
+    <p class="adm-sub">
+      Muestra u oculta las secciones de la página de inicio y cambia el orden en que aparecen.
+    </p>
+  </div>
+</div>
+
+@if (error()) {
+  <div class="adm-aviso error" role="alert">{{ error() }}</div>
+}
+
+@if (cargando()) {
+  <div class="adm-vacio" role="status">Cargando…</div>
+} @else {
+  <table class="adm-tabla">
+    <caption class="adm-sr">
+      Secciones de la página de inicio
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Orden</th>
+        <th scope="col">Nombre (solo para el panel)</th>
+        <th class="adm-col-extra" scope="col">Tipo</th>
+        <th scope="col">Visible</th>
+        <th scope="col"><span class="adm-sr">Acciones</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (seccion of secciones(); track seccion.codigo) {
+        <tr [class.inactiva]="!seccion.visible">
+          <td>{{ $index + 1 }}</td>
+          <td>
+            <input
+              [value]="seccion.nombre"
+              (change)="cambiarNombre(seccion, $event)"
+              maxlength="120"
+              [attr.aria-label]="'Nombre de la sección ' + seccion.codigo"
+            />
+            <div class="adm-sub">{{ seccion.codigo }}</div>
+          </td>
+          <td class="adm-col-extra">{{ seccion.tipo }}</td>
+          <td>
+            <input
+              type="checkbox"
+              [checked]="seccion.visible"
+              (change)="cambiarVisible(seccion, $event)"
+              [attr.aria-label]="'Visible en la web: ' + seccion.nombre"
+            />
+          </td>
+          <td>
+            <div class="adm-acciones">
+              <button
+                class="adm-btn adm-btn-sec adm-btn-mini"
+                type="button"
+                [disabled]="$first"
+                (click)="mover($index, -1)"
+                [attr.aria-label]="'Subir ' + seccion.nombre"
+              >
+                <span aria-hidden="true">↑</span>
+              </button>
+              <button
+                class="adm-btn adm-btn-sec adm-btn-mini"
+                type="button"
+                [disabled]="$last"
+                (click)="mover($index, 1)"
+                [attr.aria-label]="'Bajar ' + seccion.nombre"
+              >
+                <span aria-hidden="true">↓</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

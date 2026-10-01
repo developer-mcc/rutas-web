@@ -1,0 +1,35 @@
+<main class="adm-pagina adm-login">
+  <form class="adm-login-caja" [formGroup]="form" (ngSubmit)="entrar()">
+    @if (site.texto('sitio.logo')) {
+      <img [src]="site.texto('sitio.logo')" alt="" />
+    }
+    <h1>Administración</h1>
+    <p class="adm-sub adm-sub-login">Ingresa con tu usuario para gestionar el sitio.</p>
+    @if (error()) {
+      <div class="adm-aviso error" role="alert">{{ error() }}</div>
+    }
+    <label class="adm-campo">
+      <span>Usuario</span>
+      <input
+        admEnfocar
+        formControlName="username"
+        autocomplete="username"
+        maxlength="60"
+        aria-required="true"
+      />
+    </label>
+    <label class="adm-campo">
+      <span>Contraseña</span>
+      <input
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+        maxlength="128"
+        aria-required="true"
+      />
+    </label>
+    <button class="adm-btn adm-btn-verde" type="submit" style="width: 100%" [disabled]="enviando()">
+      {{ enviando() ? 'Ingresando…' : 'Ingresar' }}
+    </button>
+  </form>
+</main>

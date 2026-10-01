@@ -1,0 +1,196 @@
+<div class="adm-cabecera">
+  <div>
+    <h1>{{ id === null ? 'Nuevo tour' : 'Editar tour' }}</h1>
+    <p class="adm-sub">Todo lo que escribas aquí se publica en la tarjeta del tour.</p>
+  </div>
+  <a class="adm-btn adm-btn-sec" routerLink="/admin/tours"
+    ><span aria-hidden="true">←</span> Volver a tours</a
+  >
+</div>
+
+@if (error()) {
+  <div class="adm-aviso error" role="alert">{{ error() }}</div>
+}
+
+@if (cargando()) {
+  <div class="adm-vacio" role="status">Cargando…</div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+    <div class="adm-tarjeta">
+      <h2>Datos principales</h2>
+      <div class="adm-grid2">
+        <label class="adm-campo">
+          <span>Nombre</span>
+          <input
+            formControlName="nombre"
+            maxlength="160"
+            aria-required="true"
+            [attr.aria-invalid]="form.controls.nombre.invalid && form.controls.nombre.touched"
+          />
+          @if (form.controls.nombre.invalid && form.controls.nombre.touched) {
+            <span class="adm-error">El nombre es obligatorio</span>
+          }
+        </label>
+        <label class="adm-campo">
+          <span>Slug (identificador único en minúsculas)</span>
+          <input
+            formControlName="slug"
+            maxlength="120"
+            aria-required="true"
+            [attr.aria-invalid]="form.controls.slug.invalid && form.controls.slug.touched"
+          />
+          @if (form.controls.slug.invalid && form.controls.slug.touched) {
+            <span class="adm-error">Solo minúsculas, números y guiones (ej. paracas-escape)</span>
+          }
+        </label>
+        <label class="adm-campo">
+          <span>Emoji</span>
+          <input formControlName="emoji" maxlength="16" />
+        </label>
+        <label class="adm-campo">
+          <span>Etiqueta sobre la foto</span>
+          <input formControlName="etiqueta" maxlength="120" />
+        </label>
+        <label class="adm-campo">
+          <span>Insignia (ej. MÁS ELEGIDO)</span>
+          <input formControlName="insignia" maxlength="60" />
+        </label>
+        <label class="adm-campo">
+          <span>Resumen de duración</span>
+          <input formControlName="resumen" maxlength="200" />
+        </label>
+      </div>
+      <label class="adm-campo" style="margin-top: 14px">
+        <span>Descripción</span>
+        <textarea
+          formControlName="descripcion"
+          maxlength="4000"
+          aria-required="true"
+          [attr.aria-invalid]="
+            form.controls.descripcion.invalid && form.controls.descripcion.touched
+          "
+        ></textarea>
+        @if (form.controls.descripcion.invalid && form.controls.descripcion.touched) {
+          <span class="adm-error">La descripción es obligatoria</span>
+        }
+      </label>
+    </div>
+
+    <div class="adm-tarjeta">
+      <h2>Precio</h2>
+      <div class="adm-grid3">
+        <label class="adm-campo">
+          <span>Precio desde</span>
+          <input type="number" formControlName="precioDesde" min="0" step="0.01" />
+          @if (form.controls.precioDesde.invalid && form.controls.precioDesde.touched) {
+            <span class="adm-error">Indica un precio mayor o igual a 0</span>
+          }
+        </label>
+        <label class="adm-campo">
+          <span>Moneda</span>
+          <select formControlName="moneda">
+            <option value="PEN">Soles (S/)</option>
+            <option value="USD">Dólares (US$)</option>
+          </select>
+        </label>
+        <label class="adm-campo">
+          <span>Etiqueta del precio</span>
+          <input
+            formControlName="textoPrecio"
+            maxlength="120"
+            placeholder="Precio web lanzamiento desde"
+          />
+        </label>
+        <label class="adm-campo">
+          <span>Unidad del precio</span>
+          <input
+            formControlName="unidadPrecio"
+            maxlength="120"
+            placeholder="por movilidad privada*"
+          />
+        </label>
+        <label class="adm-campo">
+          <span>Detalle por viajero</span>
+          <input
+            formControlName="textoPorPersona"
+            maxlength="120"
+            placeholder="Desde S/175 p/p · 4 viajeros"
+          />
+        </label>
+      </div>
+    </div>
+
+    <div class="adm-tarjeta">
+      <h2>Imagen</h2>
+      <app-imagen-input
+        [valor]="form.controls.imagenUrl.value"
+        (cambio)="form.controls.imagenUrl.setValue($event)"
+      />
+    </div>
+
+    <div class="adm-tarjeta">
+      <h2>El paquete incluye</h2>
+      @for (inclusion of inclusiones.controls; track $index) {
+        <div class="adm-incl">
+          <input
+            [formControl]="inclusion"
+            maxlength="300"
+            [attr.aria-label]="'Inclusión ' + ($index + 1)"
+          />
+          <div class="adm-acciones">
+            <button
+              type="button"
+              class="adm-btn adm-btn-sec adm-btn-mini"
+              (click)="moverInclusion($index, -1)"
+              [attr.aria-label]="'Subir inclusión ' + ($index + 1)"
+            >
+              <span aria-hidden="true">↑</span>
+            </button>
+            <button
+              type="button"
+              class="adm-btn adm-btn-sec adm-btn-mini"
+              (click)="moverInclusion($index, 1)"
+              [attr.aria-label]="'Bajar inclusión ' + ($index + 1)"
+            >
+              <span aria-hidden="true">↓</span>
+            </button>
+            <button
+              type="button"
+              class="adm-btn adm-btn-sec adm-btn-mini"
+              (click)="quitarInclusion($index)"
+              [attr.aria-label]="'Quitar inclusión ' + ($index + 1)"
+            >
+              Quitar
+            </button>
+          </div>
+        </div>
+      }
+      <button type="button" class="adm-btn adm-btn-sec adm-btn-mini" (click)="agregarInclusion()">
+        + Agregar línea
+      </button>
+    </div>
+
+    <div class="adm-tarjeta">
+      <h2>Publicación</h2>
+      <div class="adm-grid3">
+        <label class="adm-campo">
+          <span>Orden en el catálogo</span>
+          <input type="number" formControlName="orden" min="0" />
+        </label>
+        <label class="adm-check"
+          ><input type="checkbox" formControlName="destacado" /><span>Tour destacado</span></label
+        >
+        <label class="adm-check"
+          ><input type="checkbox" formControlName="activo" /><span>Visible en la web</span></label
+        >
+      </div>
+    </div>
+
+    <div class="adm-acciones">
+      <button class="adm-btn adm-btn-verde" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Guardando…' : 'Guardar tour' }}
+      </button>
+      <a class="adm-btn adm-btn-sec" routerLink="/admin/tours">Cancelar</a>
+    </div>
+  </form>
+}

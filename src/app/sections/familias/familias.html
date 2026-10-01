@@ -1,0 +1,25 @@
+<section class="family" id="familias" aria-labelledby="familias-title">
+  <div class="wrap family-grid">
+    <div class="family-photo">
+      <img
+        [src]="site.texto('familias.imagen')"
+        [alt]="site.texto('familias.imagen_alt')"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+    <div>
+      <div class="kicker">{{ site.texto('familias.kicker') }}</div>
+      <h2 id="familias-title">{{ site.texto('familias.titulo') }}</h2>
+      <p class="lead">{{ site.texto('familias.lead') }}</p>
+      <div class="bullets">
+        @for (item of items(); track item.id) {
+          <div class="bullet">
+            <b>{{ item.icono }} {{ item.titulo }}</b>
+            {{ item.texto }}
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>

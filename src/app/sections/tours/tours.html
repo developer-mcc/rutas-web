@@ -1,0 +1,18 @@
+<section class="tours" id="tours" aria-labelledby="tours-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="kicker">{{ site.texto('tours.kicker') }}</div>
+        <h2 id="tours-title">{{ site.texto('tours.titulo') }}</h2>
+        <p class="lead">{{ site.texto('tours.lead') }}</p>
+      </div>
+      <a class="btn btn-coral" href="#cotizar">{{ site.texto('tours.boton_ayuda') }}</a>
+    </div>
+    <div class="grid">
+      @for (tour of site.tours(); track tour.id) {
+        <app-tour-card [tour]="tour" />
+      }
+    </div>
+    <p class="legal">{{ site.texto('tours.legal') }}</p>
+  </div>
+</section>

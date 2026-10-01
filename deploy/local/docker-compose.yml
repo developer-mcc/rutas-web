@@ -1,0 +1,60 @@
+# Despliegue local "como producción": Nginx + API (JAR compilado) + PostgreSQL.
+#   1) Compilar el frontend:  npx ng build   (la API se compila dentro de su imagen Docker)
+#   2) Crear .env a partir de .env.example
+#   3) docker compose up -d --build      → http://localhost:8090
+name: viaja-local
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: rutas
+      POSTGRES_USER: rutas
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rutas -d rutas"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    # La imagen se construye con el Dockerfile del backend (no hace falta compilar el JAR antes).
+    build:
+      context: ../../../../backend/rutas-api
+    image: rutas-api:local
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/rutas
+      DB_USER: rutas
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      UPLOADS_DIR: /var/www/viaja/uploads
+      SERVE_UPLOADS: "false"
+      CORS_ORIGINS: ""
+    volumes:
+      - uploads:/var/www/viaja/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    # Sin "ports": la API solo es accesible desde Nginx, igual que en producción.
+
+  web:
+    image: nginx:1.27-alpine
+    ports:
+      - "8090:80"
+    volumes:
+      - ./nginx-local.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../nginx/viaja-locations.conf:/etc/nginx/snippets/viaja-locations.conf:ro
+      - ../../dist/rutas-web/browser:/var/www/viaja/app:ro
+      - uploads:/var/www/viaja/uploads:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:

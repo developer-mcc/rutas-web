@@ -1,0 +1,85 @@
+<div class="adm-pagina adm-layout">
+  <a class="adm-saltar" href="/admin#contenido" (click)="saltar($event)">Saltar al contenido</a>
+
+  <header class="adm-header">
+    <button
+      #boton
+      type="button"
+      class="adm-menu-toggle"
+      aria-controls="menu-admin"
+      [attr.aria-expanded]="menuAbierto()"
+      (click)="alternarMenu()"
+    >
+      <span class="adm-sr">{{
+        menuAbierto() ? 'Cerrar menú de secciones' : 'Abrir menú de secciones'
+      }}</span>
+      <span class="adm-hamb" aria-hidden="true"></span>
+    </button>
+    <span class="adm-marca-movil">Panel de administración</span>
+
+    <p class="adm-header-ruta">
+      <span>Panel</span><span aria-hidden="true">/</span><strong>{{ seccionActual() }}</strong>
+    </p>
+
+    <div class="adm-usuario-menu">
+      <button
+        #botonUsuario
+        type="button"
+        class="adm-usuario-boton"
+        aria-controls="menu-usuario"
+        [attr.aria-expanded]="usuarioAbierto()"
+        (click)="alternarUsuario()"
+      >
+        <span class="adm-avatar" aria-hidden="true">{{ iniciales() }}</span>
+        <span class="adm-usuario-nombre">{{ auth.nombre() }}</span>
+        <span class="adm-sr">: menú de cuenta</span>
+        <span class="adm-flecha" aria-hidden="true"></span>
+      </button>
+      <div class="adm-usuario-panel" id="menu-usuario" [hidden]="!usuarioAbierto()">
+        <div class="adm-usuario-datos">
+          <strong>{{ auth.nombre() }}</strong>
+          <span>Administrador</span>
+        </div>
+        <a routerLink="/admin/cuenta" routerLinkActive="activo" ariaCurrentWhenActive="page"
+          >Mi cuenta</a
+        >
+        <a href="/" target="_blank" rel="noopener"
+          >Ver sitio <span aria-hidden="true">↗</span
+          ><span class="adm-sr"> (se abre en una pestaña nueva)</span></a
+        >
+        <button type="button" class="adm-salir" (click)="auth.cerrarSesion()">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <nav
+    class="adm-menu"
+    id="menu-admin"
+    aria-label="Secciones del panel"
+    [class.abierto]="menuAbierto()"
+  >
+    <div class="adm-marca">Panel de administración</div>
+    <div class="adm-menu-lista">
+      @for (opcion of opciones; track opcion.ruta) {
+        <a [routerLink]="opcion.ruta" routerLinkActive="activo" ariaCurrentWhenActive="page">{{
+          opcion.etiqueta
+        }}</a>
+      }
+    </div>
+  </nav>
+
+  <main class="adm-contenido" id="contenido" tabindex="-1">
+    <router-outlet />
+  </main>
+
+  <footer class="adm-pie">
+    <p>
+      © {{ anio }} {{ site.texto('sitio.nombre') || 'Iri Travel Perú' }} · Panel de administración
+    </p>
+    <p>
+      <a href="/" target="_blank" rel="noopener"
+        >Ver sitio web <span class="adm-sr">(se abre en una pestaña nueva)</span></a
+      >
+    </p>
+  </footer>
+</div>

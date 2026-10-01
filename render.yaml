@@ -1,0 +1,88 @@
+# Blueprint de Render: crea la base de datos, la API (Docker) y el sitio estático de una vez.
+# Render lo busca en la RAÍZ del repositorio (no necesita carpeta propia). Antes de usarlo:
+#   1. Este archivo vive en el repo del frontend. El backend (rutas-api) debe estar en otro repo de GitHub:
+#      cambia la URL de "repo" más abajo.
+#   2. Si el nombre "rutas-api" ya existe en Render, tu API tendrá otra dirección: actualiza las dos
+#      reglas "rewrite" del sitio con la dirección real de la API.
+#   3. Después del primer despliegue, ejecuta a mano los scripts db-scripts/01 a 05 en la base nueva
+#      (usa la "External Database URL" de Render): no hay migraciones automáticas.
+# Los planes y precios cambian: confírmalos en https://render.com/pricing
+
+databases:
+  - name: rutas-db
+    databaseName: rutas
+    user: rutas
+    plan: basic-256mb # el plan "free" se borra a los 30 días: solo para pruebas
+    region: oregon
+
+services:
+  # ---------- API (Spring Boot en Docker) ----------
+  - type: web
+    name: rutas-api
+    runtime: docker
+    repo: https://github.com/TU_USUARIO/rutas-api # <- cambiar por el repo del backend
+    dockerfilePath: ./Dockerfile
+    plan: starter # el plan gratis se duerme y no admite disco persistente
+    region: oregon # misma región que la base, para usar la red privada
+    healthCheckPath: /actuator/health
+    disk:
+      name: uploads
+      mountPath: /var/www/viaja/uploads
+      sizeGB: 1
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: rutas-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: rutas-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: rutas-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: rutas-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: rutas-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true # secreto aleatorio de 256 bits
+      - key: SERVE_UPLOADS
+        value: "true" # no hay Nginx: Spring sirve /uploads/
+      - key: CORS_ORIGINS
+        value: "" # mismo origen mediante las reglas rewrite del sitio
+      - key: JAVA_OPTS
+        value: -Xms256m -Xmx384m
+
+  # ---------- Sitio (Angular) ----------
+  - type: web
+    name: rutas-web
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist/rutas-web/browser
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+    routes:
+      # Las reglas se evalúan en orden: primero la API y las imágenes, al final el SPA.
+      - type: rewrite
+        source: /api/*
+        destination: https://rutas-api.onrender.com/api/*
+      - type: rewrite
+        source: /uploads/*
+        destination: https://rutas-api.onrender.com/uploads/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin

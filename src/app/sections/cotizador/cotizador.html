@@ -1,0 +1,80 @@
+<section class="quote" id="cotizar" aria-labelledby="cotizar-title">
+  <div class="wrap quote-box">
+    <div>
+      <div class="kicker">{{ site.texto('cotizador.kicker') }}</div>
+      <h2 id="cotizar-title">{{ site.texto('cotizador.titulo') }}</h2>
+      <p class="lead">{{ site.texto('cotizador.lead') }}</p>
+      <div class="quote-points">
+        @for (item of items(); track item.id) {
+          <div>{{ item.icono }} {{ item.titulo }}</div>
+        }
+      </div>
+    </div>
+    <form class="form" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <label>
+        <span>{{ site.texto('cotizador.label_destino') }}</span>
+        <select
+          formControlName="tourId"
+          aria-required="true"
+          [attr.aria-invalid]="invalido('tourId')"
+          [attr.aria-describedby]="invalido('tourId') ? 'error-tourId' : null"
+        >
+          <option value="">{{ site.texto('cotizador.placeholder_destino') }}</option>
+          @for (tour of site.tours(); track tour.id) {
+            <option [value]="tour.id">{{ tour.nombre }}</option>
+          }
+        </select>
+        @if (invalido('tourId')) {
+          <span class="form-error" id="error-tourId">{{ mensajeError }}</span>
+        }
+      </label>
+      <label>
+        <span>{{ site.texto('cotizador.label_fecha') }}</span>
+        <input
+          type="date"
+          formControlName="fechaViaje"
+          [min]="hoy"
+          aria-required="true"
+          [attr.aria-invalid]="invalido('fechaViaje')"
+          [attr.aria-describedby]="invalido('fechaViaje') ? 'error-fechaViaje' : null"
+        />
+        @if (invalido('fechaViaje')) {
+          <span class="form-error" id="error-fechaViaje">{{ mensajeError }}</span>
+        }
+      </label>
+      <label>
+        <span>{{ site.texto('cotizador.label_pasajeros') }}</span>
+        <select
+          formControlName="pasajeros"
+          aria-required="true"
+          [attr.aria-invalid]="invalido('pasajeros')"
+          [attr.aria-describedby]="invalido('pasajeros') ? 'error-pasajeros' : null"
+        >
+          <option value="">{{ site.texto('cotizador.placeholder_pasajeros') }}</option>
+          @for (cantidad of pasajeros; track cantidad) {
+            <option [value]="cantidad">{{ cantidad }}</option>
+          }
+        </select>
+        @if (invalido('pasajeros')) {
+          <span class="form-error" id="error-pasajeros">{{ mensajeError }}</span>
+        }
+      </label>
+      <label>
+        <span>{{ site.texto('cotizador.label_recojo') }}</span>
+        <input
+          formControlName="recojo"
+          maxlength="200"
+          autocomplete="street-address"
+          aria-required="true"
+          [attr.aria-invalid]="invalido('recojo')"
+          [attr.aria-describedby]="invalido('recojo') ? 'error-recojo' : null"
+          [placeholder]="site.texto('cotizador.placeholder_recojo')"
+        />
+        @if (invalido('recojo')) {
+          <span class="form-error" id="error-recojo">{{ mensajeError }}</span>
+        }
+      </label>
+      <button type="submit">{{ site.texto('cotizador.boton') }}</button>
+    </form>
+  </div>
+</section>

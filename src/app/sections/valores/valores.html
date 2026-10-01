@@ -1,0 +1,13 @@
+<div class="value-strip">
+  <div class="wrap value-row">
+    @for (item of items(); track item.id) {
+      <div class="value">
+        <i aria-hidden="true">{{ item.icono }}</i>
+        <div>
+          <b>{{ item.titulo }}</b>
+          <small>{{ item.texto }}</small>
+        </div>
+      </div>
+    }
+  </div>
+</div>

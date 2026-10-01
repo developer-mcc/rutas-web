@@ -1,0 +1,19 @@
+<section class="promo" aria-labelledby="promo-title">
+  <div class="wrap">
+    <div class="promo-box">
+      <div>
+        <div class="kicker">{{ site.texto('promo.kicker') }}</div>
+        <h2 id="promo-title">{{ site.texto('promo.titulo') }}</h2>
+        <p>{{ site.texto('promo.texto') }}</p>
+      </div>
+      <div class="promo-card">
+        <b>{{ site.texto('promo.tarjeta_titulo') }}</b>
+        <ul>
+          @for (item of items(); track item.id) {
+            <li>{{ item.titulo }}</li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

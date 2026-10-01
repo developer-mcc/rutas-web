@@ -1,0 +1,210 @@
+<div class="adm-cabecera">
+  <div>
+    <h1>Mi cuenta</h1>
+    <p class="adm-sub">
+      Edita tus datos personales y cambia la contraseña con la que ingresas al panel.
+    </p>
+  </div>
+</div>
+
+@if (errorPerfil()) {
+  <div class="adm-aviso error" role="alert">{{ errorPerfil() }}</div>
+}
+@if (perfil(); as p) {
+  <section class="adm-tarjeta" aria-labelledby="cuenta-titulo">
+    <h2 id="cuenta-titulo">Datos de la cuenta</h2>
+    <dl class="adm-datos">
+      <div>
+        <dt>Usuario</dt>
+        <dd>{{ p.username }}</dd>
+      </div>
+      <div>
+        <dt>Rol</dt>
+        <dd>{{ p.rol }}</dd>
+      </div>
+      <div>
+        <dt>Estado</dt>
+        <dd>
+          <span class="adm-pildora" [class.off]="!p.activo">{{
+            p.activo ? 'Activo' : 'Inactivo'
+          }}</span>
+        </dd>
+      </div>
+      <div>
+        <dt>Cuenta creada</dt>
+        <dd>{{ p.creadoEn | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      </div>
+      <div>
+        <dt>Perfil actualizado</dt>
+        <dd>{{ p.persona.actualizadoEn | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <form
+    class="adm-tarjeta"
+    aria-labelledby="perfil-titulo"
+    [formGroup]="formPerfil"
+    (ngSubmit)="guardarPerfil()"
+  >
+    <h2 id="perfil-titulo">Mi perfil</h2>
+    @if (errorGuardado()) {
+      <div class="adm-aviso error" role="alert">{{ errorGuardado() }}</div>
+    }
+    @if (mensajePerfil()) {
+      <div class="adm-aviso ok" role="status">{{ mensajePerfil() }}</div>
+    }
+    <div class="adm-grid2">
+      <label class="adm-campo">
+        <span>Nombres</span>
+        <input
+          formControlName="nombres"
+          autocomplete="given-name"
+          maxlength="120"
+          aria-required="true"
+          [attr.aria-invalid]="
+            formPerfil.controls.nombres.invalid && formPerfil.controls.nombres.touched
+          "
+        />
+        @if (formPerfil.controls.nombres.invalid && formPerfil.controls.nombres.touched) {
+          <span class="adm-error">Los nombres son obligatorios</span>
+        }
+      </label>
+      <label class="adm-campo">
+        <span>Apellidos</span>
+        <input
+          formControlName="apellidos"
+          autocomplete="family-name"
+          maxlength="120"
+          aria-required="true"
+          [attr.aria-invalid]="
+            formPerfil.controls.apellidos.invalid && formPerfil.controls.apellidos.touched
+          "
+        />
+        @if (formPerfil.controls.apellidos.invalid && formPerfil.controls.apellidos.touched) {
+          <span class="adm-error">Los apellidos son obligatorios</span>
+        }
+      </label>
+      <label class="adm-campo">
+        <span>Correo electrónico</span>
+        <input
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          maxlength="160"
+          [attr.aria-invalid]="
+            formPerfil.controls.email.invalid && formPerfil.controls.email.touched
+          "
+        />
+        @if (formPerfil.controls.email.invalid && formPerfil.controls.email.touched) {
+          <span class="adm-error"
+            >Escribe un correo válido, por ejemplo nombre&#64;dominio.com</span
+          >
+        }
+      </label>
+      <label class="adm-campo">
+        <span>Teléfono</span>
+        <input
+          type="tel"
+          formControlName="telefono"
+          autocomplete="tel"
+          maxlength="30"
+          [attr.aria-invalid]="
+            formPerfil.controls.telefono.invalid && formPerfil.controls.telefono.touched
+          "
+        />
+        @if (formPerfil.controls.telefono.invalid && formPerfil.controls.telefono.touched) {
+          <span class="adm-error"
+            >Solo números, espacios, guiones y paréntesis (ej. +51 943 879 618)</span
+          >
+        }
+      </label>
+      <label class="adm-campo">
+        <span>Tipo de documento</span>
+        <select
+          formControlName="tipoDocumento"
+          [attr.aria-invalid]="errorDocumento() ? true : null"
+        >
+          <option value="">Sin documento</option>
+          @for (tipo of tiposDocumento; track tipo) {
+            <option [value]="tipo">{{ tipo }}</option>
+          }
+        </select>
+      </label>
+      <label class="adm-campo">
+        <span>Número de documento</span>
+        <input
+          formControlName="numeroDocumento"
+          maxlength="20"
+          [attr.aria-invalid]="
+            (formPerfil.controls.numeroDocumento.invalid &&
+              formPerfil.controls.numeroDocumento.touched) ||
+            errorDocumento()
+              ? true
+              : null
+          "
+        />
+        @if (
+          formPerfil.controls.numeroDocumento.invalid && formPerfil.controls.numeroDocumento.touched
+        ) {
+          <span class="adm-error">Usa de 4 a 20 letras, números o guiones</span>
+        }
+      </label>
+    </div>
+    @if (errorDocumento()) {
+      <p class="adm-error-bloque" role="alert">{{ errorDocumento() }}</p>
+    }
+    <div class="adm-acciones" style="margin-top: 16px">
+      <button class="adm-btn adm-btn-verde" type="submit" [disabled]="guardandoPerfil()">
+        {{ guardandoPerfil() ? 'Guardando…' : 'Guardar perfil' }}
+      </button>
+    </div>
+  </form>
+}
+
+<h2 class="adm-subtitulo" id="password-titulo">Contraseña</h2>
+@if (error()) {
+  <div class="adm-aviso error" role="alert">{{ error() }}</div>
+}
+@if (mensaje()) {
+  <div class="adm-aviso ok" role="status">{{ mensaje() }}</div>
+}
+
+<form
+  class="adm-tarjeta"
+  style="max-width: 480px"
+  aria-labelledby="password-titulo"
+  [formGroup]="form"
+  (ngSubmit)="cambiar()"
+>
+  <label class="adm-campo" style="margin-bottom: 14px">
+    <span>Contraseña actual</span>
+    <input
+      type="password"
+      formControlName="actual"
+      autocomplete="current-password"
+      maxlength="128"
+      aria-required="true"
+    />
+  </label>
+  <label class="adm-campo" style="margin-bottom: 14px">
+    <span>Contraseña nueva (mínimo 12 caracteres)</span>
+    <input type="password" formControlName="nueva" autocomplete="new-password" maxlength="128" />
+    @if (form.controls.nueva.invalid && form.controls.nueva.touched) {
+      <span class="adm-error">Debe tener al menos 12 caracteres</span>
+    }
+  </label>
+  <label class="adm-campo" style="margin-bottom: 14px">
+    <span>Repite la contraseña nueva</span>
+    <input
+      type="password"
+      formControlName="repetir"
+      autocomplete="new-password"
+      maxlength="128"
+      aria-required="true"
+    />
+  </label>
+  <button class="adm-btn adm-btn-verde" type="submit" [disabled]="enviando()">
+    {{ enviando() ? 'Guardando…' : 'Cambiar contraseña' }}
+  </button>
+</form>

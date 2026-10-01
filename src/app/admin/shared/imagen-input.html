@@ -1,0 +1,36 @@
+<div class="adm-imagen">
+  @if (valor()) {
+    <img [src]="valor()" alt="Vista previa" />
+  } @else {
+    <div class="adm-vacia">Sin imagen</div>
+  }
+  <div>
+    <input
+      type="text"
+      [value]="valor()"
+      (change)="editarTexto($event)"
+      aria-label="Ruta o URL de la imagen"
+      placeholder="/uploads/archivo.jpg o https://…"
+      maxlength="300"
+    />
+    <div class="adm-acciones">
+      <label class="adm-btn adm-btn-sec adm-btn-mini">
+        {{ subiendo() ? 'Subiendo…' : 'Subir imagen' }}
+        <input
+          type="file"
+          class="adm-sr"
+          accept="image/jpeg,image/png,image/webp"
+          (change)="subir($event)"
+        />
+      </label>
+      @if (valor()) {
+        <button type="button" class="adm-btn adm-btn-sec adm-btn-mini" (click)="cambio.emit('')">
+          Quitar imagen
+        </button>
+      }
+    </div>
+    @if (error()) {
+      <span class="adm-error-imagen" role="alert">{{ error() }}</span>
+    }
+  </div>
+</div>

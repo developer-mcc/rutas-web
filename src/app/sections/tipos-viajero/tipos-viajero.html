@@ -1,0 +1,23 @@
+<section class="traveler-types" id="tipos-viaje" aria-labelledby="tipos-viaje-title">
+  <div class="wrap">
+    <div class="traveler-head">
+      <span class="kicker">{{ site.texto('tipos-viajero.kicker') }}</span>
+      <h2 id="tipos-viaje-title">{{ site.texto('tipos-viajero.titulo') }}</h2>
+      <p class="lead">{{ site.texto('tipos-viajero.lead') }}</p>
+    </div>
+    <div class="traveler-grid">
+      @for (item of items(); track item.id) {
+        <article class="traveler-card">
+          @if (item.imagenUrl) {
+            <img [src]="item.imagenUrl" alt="" loading="lazy" decoding="async" />
+          }
+          <div class="traveler-copy">
+            <span class="icon" aria-hidden="true">{{ item.icono }}</span>
+            <h3>{{ item.titulo }}</h3>
+            <p>{{ item.texto }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>
