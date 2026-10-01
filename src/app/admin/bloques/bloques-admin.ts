@@ -6,13 +6,14 @@ import { AdminApiService } from '../../core/services/admin-api.service';
 import { mensajeDeError } from '../../core/util/errores';
 import { ImagenInput } from '../shared/imagen-input';
 import { EnfocarAlCrear, RetornarFoco, enfocarPrimerInvalido } from '../shared/foco';
+import { UrlMediaPipe } from '../../core/util/url-media.pipe';
 
 /** Tipos de sección que se pintan con una lista de bloques. */
 const TIPOS_CON_BLOQUES = ['BLOQUES', 'COTIZADOR'];
 
 @Component({
   selector: 'app-bloques-admin',
-  imports: [ReactiveFormsModule, ImagenInput, EnfocarAlCrear, RetornarFoco],
+  imports: [UrlMediaPipe, ReactiveFormsModule, ImagenInput, EnfocarAlCrear, RetornarFoco],
   templateUrl: './bloques-admin.html',
 })
 export class BloquesAdmin {

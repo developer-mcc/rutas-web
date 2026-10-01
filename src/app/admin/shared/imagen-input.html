@@ -1,6 +1,6 @@
 <div class="adm-imagen">
   @if (valor()) {
-    <img [src]="valor()" alt="Vista previa" />
+    <img [src]="valor() | urlMedia" alt="Vista previa" />
   } @else {
     <div class="adm-vacia">Sin imagen</div>
   }

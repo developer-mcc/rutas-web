@@ -5,10 +5,11 @@ import { AdminApiService } from '../../core/services/admin-api.service';
 import { mensajeDeError } from '../../core/util/errores';
 import { formatearPrecio } from '../../core/util/precio';
 import { EnfocarAlCrear, RetornarFoco } from '../shared/foco';
+import { UrlMediaPipe } from '../../core/util/url-media.pipe';
 
 @Component({
   selector: 'app-tours-lista',
-  imports: [RouterLink, EnfocarAlCrear, RetornarFoco],
+  imports: [UrlMediaPipe, RouterLink, EnfocarAlCrear, RetornarFoco],
   templateUrl: './tours-lista.html',
 })
 export class ToursLista {

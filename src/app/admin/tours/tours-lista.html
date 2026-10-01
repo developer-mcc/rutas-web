@@ -38,7 +38,7 @@
           <td class="adm-col-extra">{{ tour.orden }}</td>
           <td class="adm-col-extra">
             @if (tour.imagenUrl) {
-              <img class="adm-miniatura" [src]="tour.imagenUrl" alt="" />
+              <img class="adm-miniatura" [src]="tour.imagenUrl | urlMedia" alt="" />
             }
           </td>
           <td>

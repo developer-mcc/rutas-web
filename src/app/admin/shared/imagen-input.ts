@@ -1,9 +1,11 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { AdminApiService } from '../../core/services/admin-api.service';
 import { mensajeDeError } from '../../core/util/errores';
+import { UrlMediaPipe } from '../../core/util/url-media.pipe';
 
 /** Campo de imagen: vista previa, subida de archivo (JPG/PNG/WebP) o URL https escrita a mano. */
 @Component({
+  imports: [UrlMediaPipe],
   selector: 'app-imagen-input',
   templateUrl: './imagen-input.html',
 })

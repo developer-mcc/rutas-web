@@ -93,7 +93,7 @@
           <td class="adm-col-extra">{{ $index + 1 }}</td>
           <td class="adm-col-extra">
             @if (bloque.imagenUrl) {
-              <img class="adm-miniatura" [src]="bloque.imagenUrl" alt="" />
+              <img class="adm-miniatura" [src]="bloque.imagenUrl | urlMedia" alt="" />
             }
           </td>
           <td>

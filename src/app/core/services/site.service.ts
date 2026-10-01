@@ -3,6 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { Ajustes, Bloque, Faq, Seccion, Tour } from '../models/api.models';
+import { urlMedia } from '../util/media';
 import { ApiService } from './api.service';
 
 const PREFIJO_TEMA = 'tema.';
@@ -45,7 +46,7 @@ export class SiteService {
   /** Carga todo el contenido; si la API falla la app arranca igual y muestra el estado de error. */
   async cargar(): Promise<void> {
     try {
-      const [ajustes, secciones, bloques, tours, faqs] = await firstValueFrom(
+      const [ajustesApi, secciones, bloquesApi, toursApi, faqs] = await firstValueFrom(
         forkJoin([
           this.api.ajustes(),
           this.api.secciones(),
@@ -54,6 +55,12 @@ export class SiteService {
           this.api.faqs(),
         ]),
       );
+      const ajustes = this.conMediaAbsoluta(ajustesApi);
+      const bloques = bloquesApi.map((bloque) => ({
+        ...bloque,
+        imagenUrl: this.media(bloque.imagenUrl),
+      }));
+      const tours = toursApi.map((tour) => ({ ...tour, imagenUrl: this.media(tour.imagenUrl) }));
       this.ajustes.set(ajustes);
       this.secciones.set(secciones);
       this.bloques.set(bloques);
@@ -65,6 +72,16 @@ export class SiteService {
     } catch {
       this.error.set(true);
     }
+  }
+
+  private media(ruta: string | null): string | null {
+    return ruta ? urlMedia(ruta) : ruta;
+  }
+
+  private conMediaAbsoluta(ajustes: Ajustes): Ajustes {
+    return Object.fromEntries(
+      Object.entries(ajustes).map(([clave, valor]) => [clave, urlMedia(valor) || valor]),
+    );
   }
 
   texto(clave: string): string {
